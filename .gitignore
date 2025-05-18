@@ -1,0 +1,19 @@
+# Ignore node modules and build output
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Ignore media uploads
+server/uploads/
+
+# Ignore logs
+*.log
+
+# Ignore OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Ignore build artifacts
+dist/
+build/
