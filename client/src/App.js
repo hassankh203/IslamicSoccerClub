@@ -8,6 +8,9 @@ if (!globalSocket) {
   globalSocket = io('http://localhost:5000', { autoConnect: false });
 }
 
+// Helper to get API base URL from environment or fallback
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 function App() {
   const [page, setPage] = useState('home');
   const [form, setForm] = useState({ firstName: '', lastName: '', name: '', phone: '', password: '' });
@@ -36,7 +39,7 @@ function App() {
       return;
     }
     try {
-      const res = await fetch("/api/forgot-password", {
+      const res = await fetch(`${API_URL}/api/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: forgotPhone })
@@ -67,7 +70,7 @@ function App() {
       return;
     }
     try {
-      const res = await fetch('http://localhost:5000/api/register', {
+      const res = await fetch(`${API_URL}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
@@ -103,7 +106,7 @@ function App() {
       return;
     }
     try {
-      const res = await fetch('http://localhost:5000/api/signin', {
+      const res = await fetch(`${API_URL}/api/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: form.phone, password: form.password }),
@@ -146,7 +149,7 @@ function App() {
   const syncKids = async (newKids) => {
     if (!user) return;
     try {
-      await fetch('http://localhost:5000/api/user/kids', {
+      await fetch(`${API_URL}/api/user/kids`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: user.phone, kids: newKids })
@@ -158,7 +161,7 @@ function App() {
   const syncMember = async (newName, newPhone) => {
     if (!user) return;
     try {
-      const res = await fetch('http://localhost:5000/api/user/update', {
+      const res = await fetch(`${API_URL}/api/user/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: user.phone, name: newName, newPhone })
@@ -172,10 +175,11 @@ function App() {
   };
 
   // Edit member info
-  const handleEditMember = (e) => {
+  const handleEditMember = async (e) => {
     e.preventDefault();
-    syncMember(editForm.name, editForm.phone);
+    await syncMember(editForm.name, editForm.phone);
     setEditMode(false);
+    setPage('account'); // Force refresh to show updated info
   };
 
   // Add kid
@@ -217,7 +221,7 @@ function App() {
     if (isAdmin && page === 'admin') {
       setAdminLoading(true);
       setAdminError('');
-      fetch('http://localhost:5000/api/all-parents')
+      fetch(`${API_URL}/api/all-parents`)
         .then(res => res.json())
         .then(data => {
           // Show password field for admin view
@@ -243,14 +247,14 @@ function App() {
     setAllParents(updated);
   };
   const handleAdminSaveParent = async (parent) => {
-    await fetch('http://localhost:5000/api/admin/update-parent', {
+    await fetch(`${API_URL}/api/admin/update-parent`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(parent)
     });
   };
   const handleAdminSaveKid = async (parent, kid) => {
-    await fetch('http://localhost:5000/api/admin/update-kid', {
+    await fetch(`${API_URL}/api/admin/update-kid`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ parentPhone: parent.phone, kid })
@@ -259,7 +263,7 @@ function App() {
   const handleAdminDeleteParent = async (parent) => {
     if (!window.confirm(`Are you sure you want to delete user ${parent.name} (${parent.phone})? This cannot be undone.`)) return;
     try {
-      const res = await fetch('http://localhost:5000/api/admin/delete-user', {
+      const res = await fetch(`${API_URL}/api/admin/delete-user`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: parent.phone })
@@ -1130,7 +1134,7 @@ function TeamsPage({ onBack }) {
 
   return (
     <div className="info-page" style={{maxWidth:900, margin:'0 auto', background:'#fff', borderRadius:8, boxShadow:'0 2px 8px #1a7f3c22', padding:24}}>
-      <h2 style={{color:'#1a7f3c', marginBottom:32}}>Teams</h2>
+      <h2 style={{color:'#1a237e', fontWeight:700, marginBottom:24, fontSize:'2.2rem', letterSpacing:1}}>Teams</h2>
       {loading && <div>Loading players...</div>}
       {error && <div style={{color:'red'}}>{error}</div>}
       <h3 style={{color:'#1a7f3c', marginTop:0}}>Group A Players (10+ years old)</h3>
