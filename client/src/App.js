@@ -64,6 +64,8 @@ function App() {
   const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
+    // Debug log to check if handler is called and API URL is correct
+    console.log('Register clicked', form, 'API_URL:', API_URL);
     // Password validation: only numbers, at least 6 digits
     if (!/^\d{6,}$/.test(form.password)) {
       setError('Password must be a number with at least 6 digits.');
@@ -97,6 +99,8 @@ function App() {
   const handleSignIn = async (e) => {
     e.preventDefault();
     setError('');
+    // Debug log to check if handler is called and API URL is correct
+    console.log('SignIn clicked', form, 'API_URL:', API_URL);
     // Admin shortcut: if admin credentials, set admin state and go to admin page
     if (form.phone === 'admin' && form.password === 'admin') {
       setIsAdmin(true);
@@ -1130,7 +1134,7 @@ function TeamsPage({ onBack }) {
     background: '#fff',
     color: '#222',
     fontWeight: 400
-  };
+   };
 
   return (
     <div className="info-page" style={{maxWidth:900, margin:'0 auto', background:'#fff', borderRadius:8, boxShadow:'0 2px 8px #1a7f3c22', padding:24}}>
